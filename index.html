@@ -168,6 +168,8 @@
   .zodiac-name { font-size: 0.78rem; color: var(--ink); flex: 1; }
   .zodiac-count { font-size: 0.78rem; font-weight: 600; color: var(--ink-muted); }
 
+
+
   /* FACT CARDS */
   .fact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; margin-bottom: 2rem; }
   .fact-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem 1.4rem; }
@@ -270,6 +272,13 @@ const RAW = [
   { name: "Jasleen",  dob: "1994-09-15" },
   { name: "Manny",    dob: "1986-12-27" },
   { name: "Rani",     dob: "1987-09-17" },
+  { name: "Bibi",     dob: "1941-04-20" },
+  { name: "Aman",     dob: "1992-09-28" },
+  { name: "Paramjit", dob: "1961-03-10" },
+  { name: "Simrit",   dob: "2008-12-02" },
+  { name: "Karam",    dob: "2010-01-26" },
+  { name: "Simran",   dob: "2001-04-20" },
+  { name: "Amar",     dob: "1993-04-23" },
 ];
 
 const AVATAR_COLORS = [
@@ -280,7 +289,10 @@ const AVATAR_COLORS = [
   { bg:"#EEEDFE", color:"#3C3489" }, { bg:"#E1F5EE", color:"#085041" },
   { bg:"#FAEEDA", color:"#633806" }, { bg:"#FAECE7", color:"#712B13" },
   { bg:"#E6F1FB", color:"#0C447C" }, { bg:"#EAF3DE", color:"#27500A" },
-  { bg:"#FBEAF0", color:"#72243E" },
+  { bg:"#FBEAF0", color:"#72243E" }, { bg:"#FCEBEB", color:"#501313" },
+  { bg:"#E1F5EE", color:"#04342C" }, { bg:"#EEEDFE", color:"#26215C" },
+  { bg:"#FAEEDA", color:"#412402" }, { bg:"#FAECE7", color:"#4A1B0C" },
+  { bg:"#E6F1FB", color:"#042C53" }, { bg:"#EAF3DE", color:"#173404" },
 ];
 
 const BAR_COLORS = [
@@ -542,6 +554,8 @@ sortedZodiac.forEach(([sign,count]) => {
 });
 html += `</div></div></div>`;
 html += `</div>`; // end two-col
+
+
 
 // Age gap fun facts
 html += `<div class="section-label" style="margin-bottom:1rem">Age gap fun facts</div>
