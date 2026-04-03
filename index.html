@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Family Birthday Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF7F2;
+    --ink: #1A1714;
+    --ink-muted: #6B6560;
+    --ink-faint: #B8B3AD;
+    --purple-bg: #EEEDFE;
+    --purple: #534AB7;
+    --purple-dark: #3C3489;
+    --teal-bg: #E1F5EE;
+    --teal: #0F6E56;
+    --coral-bg: #FAECE7;
+    --coral: #993C1D;
+    --amber-bg: #FAEEDA;
+    --amber: #854F0B;
+    --blue-bg: #E6F1FB;
+    --blue: #185FA5;
+    --green-bg: #EAF3DE;
+    --green: #3B6D11;
+    --pink-bg: #FBEAF0;
+    --pink: #993556;
+    --border: rgba(26,23,20,0.1);
+    --card-bg: #fff;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+  }
+
+  .page { max-width: 960px; margin: 0 auto; }
+
+  header {
+    text-align: center;
+    padding: 3rem 1rem 2.5rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2.5rem;
+  }
+
+  header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+  header p {
+    font-size: 0.9rem;
+    color: var(--ink-muted);
+    font-weight: 400;
+  }
+
+  .section-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-muted);
+    margin-bottom: 1rem;
+  }
+
+  /* NEXT UP HERO */
+  .next-hero {
+    background: var(--purple);
+    border-radius: var(--radius);
+    padding: 2rem 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .next-hero .icon { font-size: 3rem; flex-shrink: 0; }
+  .next-hero .info { flex: 1; min-width: 180px; }
+  .next-hero .eyebrow { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #AFA9EC; margin-bottom: 6px; }
+  .next-hero .name { font-family: 'DM Serif Display', serif; font-size: 2rem; color: #EEEDFE; margin-bottom: 4px; }
+  .next-hero .details { font-size: 0.85rem; color: #AFA9EC; }
+  .next-hero .countdown { text-align: right; min-width: 80px; }
+  .next-hero .days-num { font-family: 'DM Serif Display', serif; font-size: 3.5rem; color: #EEEDFE; line-height: 1; }
+  .next-hero .days-label { font-size: 0.75rem; color: #AFA9EC; text-transform: uppercase; letter-spacing: 0.08em; }
+
+  /* STATS ROW */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    margin-bottom: 2rem;
+  }
+  .stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 1rem 1.2rem;
+  }
+  .stat-card .label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-muted); margin-bottom: 6px; }
+  .stat-card .value { font-family: 'DM Serif Display', serif; font-size: 1.6rem; color: var(--ink); line-height: 1; margin-bottom: 3px; }
+  .stat-card .sub { font-size: 0.75rem; color: var(--ink-muted); }
+
+  /* TWO COLUMN */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; }
+  @media (max-width: 620px) { .two-col { grid-template-columns: 1fr; } }
+
+  .panel {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+  }
+
+  /* BIRTHDAY LIST */
+  .bday-list { list-style: none; }
+  .bday-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .bday-item:last-child { border-bottom: none; }
+  .bday-item.today-item { background: #FFFBF0; border-radius: 8px; padding: 8px 10px; margin: 0 -10px; }
+  .avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; font-weight: 600; flex-shrink: 0;
+  }
+  .bday-name { font-size: 0.875rem; font-weight: 500; color: var(--ink); }
+  .bday-meta { font-size: 0.75rem; color: var(--ink-muted); margin-top: 1px; }
+  .bday-right { margin-left: auto; display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+  .pill {
+    font-size: 0.65rem; font-weight: 600; padding: 2px 8px;
+    border-radius: 20px; white-space: nowrap;
+  }
+  .pill-today { background: var(--purple); color: #EEEDFE; }
+  .pill-soon { background: var(--purple-bg); color: var(--purple-dark); }
+  .pill-near { background: var(--teal-bg); color: var(--teal); }
+  .pill-far { background: #F1EFE8; color: #5F5E5A; }
+  .bday-age { font-size: 0.7rem; color: var(--ink-faint); }
+
+  /* MONTH BARS */
+  .month-chart { display: flex; flex-direction: column; gap: 5px; }
+  .month-row { display: flex; align-items: center; gap: 8px; }
+  .month-name { font-size: 0.7rem; color: var(--ink-muted); width: 26px; flex-shrink: 0; }
+  .month-bar-track { flex: 1; background: #F1EFE8; border-radius: 4px; height: 20px; overflow: hidden; }
+  .month-bar-fill { height: 100%; border-radius: 4px; display: flex; align-items: center; padding: 0 6px; transition: width 0.6s ease; }
+  .month-bar-fill span { font-size: 0.65rem; font-weight: 600; color: #fff; }
+  .month-count { font-size: 0.7rem; color: var(--ink-muted); width: 12px; text-align: right; }
+
+  /* ZODIAC */
+  .zodiac-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 16px; }
+  .zodiac-row { display: flex; align-items: center; gap: 6px; padding: 5px 0; border-bottom: 1px solid var(--border); }
+  .zodiac-row:nth-child(odd):last-child { border-bottom: none; }
+  .zodiac-sym { font-size: 1rem; }
+  .zodiac-name { font-size: 0.78rem; color: var(--ink); flex: 1; }
+  .zodiac-count { font-size: 0.78rem; font-weight: 600; color: var(--ink-muted); }
+
+  /* FACT CARDS */
+  .fact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; margin-bottom: 2rem; }
+  .fact-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem 1.4rem; }
+  .fact-tag { display: inline-block; font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; padding: 3px 9px; border-radius: 20px; margin-bottom: 10px; }
+  .fact-main { font-size: 0.95rem; font-weight: 500; color: var(--ink); line-height: 1.4; margin-bottom: 5px; }
+  .fact-sub { font-size: 0.78rem; color: var(--ink-muted); line-height: 1.5; }
+
+  /* TIMELINE */
+  .timeline-section { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; margin-bottom: 2rem; }
+  .tl-row { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; }
+  .tl-name { font-size: 0.72rem; color: var(--ink-muted); width: 70px; flex-shrink: 0; text-align: right; }
+  .tl-bar-wrap { flex: 1; height: 22px; position: relative; }
+  .tl-bar { height: 22px; border-radius: 5px; display: flex; align-items: center; padding: 0 8px; }
+  .tl-bar span { font-size: 0.68rem; font-weight: 600; white-space: nowrap; }
+  .tl-age { font-size: 0.68rem; color: var(--ink-faint); width: 28px; flex-shrink: 0; }
+
+  /* GENERATION CARDS */
+  .gen-section { margin-bottom: 2rem; }
+  .gen-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+  .gen-card { border-radius: var(--radius-sm); padding: 1rem 1.1rem; }
+  .gen-title { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+  .gen-range { font-size: 0.68rem; margin-bottom: 8px; }
+  .gen-names { font-size: 0.78rem; font-weight: 500; line-height: 1.7; }
+
+  /* MILESTONE */
+  .milestone-section { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; margin-bottom: 2rem; }
+  .milestone-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .milestone-row:last-child { border-bottom: none; }
+  .milestone-badge { font-size: 0.68rem; font-weight: 600; padding: 3px 9px; border-radius: 20px; flex-shrink: 0; }
+
+  /* SHARED BDAY BANNER */
+  .shared-banner {
+    background: var(--amber-bg);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: var(--amber);
+    font-weight: 500;
+  }
+
+  /* MATH AUDIT TABLE */
+  .audit-section { margin-bottom: 2rem; }
+  .audit-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; background: var(--card-bg); border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
+  .audit-table th { background: #F5F2ED; font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-muted); padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+  .audit-table td { padding: 9px 14px; border-bottom: 1px solid var(--border); color: var(--ink); vertical-align: middle; }
+  .audit-table tr:last-child td { border-bottom: none; }
+  .audit-table tr:hover td { background: #FAFAF8; }
+
+  footer {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--ink-faint);
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    margin-top: 1rem;
+  }
+
+  .no-milestone {
+    font-size: 0.85rem;
+    color: var(--ink-muted);
+    padding: 1rem 0;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <h1>&#127874; Family Birthdays</h1>
+    <p id="header-sub">Loading...</p>
+  </header>
+
+  <div id="app"></div>
+
+  <footer id="footer"></footer>
+
+</div>
+
+<script>
+const TODAY = new Date();
+TODAY.setHours(0, 0, 0, 0);
+
+const RAW = [
+  { name: "Manjit",   dob: "1961-01-03" },
+  { name: "Amritpal", dob: "1958-03-10" },
+  { name: "Harleen",  dob: "2003-03-18" },
+  { name: "Harpreet", dob: "1993-04-25" },
+  { name: "Veer",     dob: "2022-03-23" },
+  { name: "Raunak",   dob: "2025-09-30" },
+  { name: "Noor",     dob: "2020-07-23" },
+  { name: "Jassi",    dob: "1996-07-23" },
+  { name: "Jasmeen",  dob: "1996-07-20" },
+  { name: "Harkirat", dob: "1997-05-27" },
+  { name: "Minnie",   dob: "1975-07-15" },
+  { name: "Ghazal",   dob: "1995-10-15" },
+  { name: "Jasleen",  dob: "1994-09-15" },
+  { name: "Manny",    dob: "1986-12-27" },
+  { name: "Rani",     dob: "1987-09-17" },
+];
+
+const AVATAR_COLORS = [
+  { bg:"#EEEDFE", color:"#534AB7" }, { bg:"#E1F5EE", color:"#0F6E56" },
+  { bg:"#FAECE7", color:"#993C1D" }, { bg:"#FBEAF0", color:"#993556" },
+  { bg:"#E6F1FB", color:"#185FA5" }, { bg:"#EAF3DE", color:"#3B6D11" },
+  { bg:"#FAEEDA", color:"#854F0B" }, { bg:"#FCEBEB", color:"#A32D2D" },
+  { bg:"#EEEDFE", color:"#3C3489" }, { bg:"#E1F5EE", color:"#085041" },
+  { bg:"#FAEEDA", color:"#633806" }, { bg:"#FAECE7", color:"#712B13" },
+  { bg:"#E6F1FB", color:"#0C447C" }, { bg:"#EAF3DE", color:"#27500A" },
+  { bg:"#FBEAF0", color:"#72243E" },
+];
+
+const BAR_COLORS = [
+  "#7F77DD","#1D9E75","#D85A30","#D4537E","#378ADD","#639922",
+  "#BA7517","#E24B4A","#7F77DD","#1D9E75","#D85A30","#D4537E",
+];
+
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const MONTHS_FULL = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const MILESTONES = [1,2,3,4,5,10,13,16,18,21,25,30,40,50,60,65,70,75,80,90,100];
+
+const ZODIAC_EMOJI = {
+  Aquarius:"♒", Pisces:"♓", Aries:"♈", Taurus:"♉", Gemini:"♊", Cancer:"♋",
+  Leo:"♌", Virgo:"♍", Libra:"♎", Scorpio:"♏", Sagittarius:"♐", Capricorn:"♑"
+};
+
+function parseDate(str) {
+  const [y,m,d] = str.split("-").map(Number);
+  const dt = new Date(y, m-1, d);
+  dt.setHours(0,0,0,0);
+  return dt;
+}
+
+function ageAtDate(dob, refDate) {
+  let age = refDate.getFullYear() - dob.getFullYear();
+  const hadBday = refDate >= new Date(refDate.getFullYear(), dob.getMonth(), dob.getDate());
+  if (!hadBday) age--;
+  return age;
+}
+
+function ageNow(dob) { return ageAtDate(dob, TODAY); }
+
+function nextBirthday(dob) {
+  const thisYear = new Date(TODAY.getFullYear(), dob.getMonth(), dob.getDate());
+  thisYear.setHours(0,0,0,0);
+  if (thisYear >= TODAY) return thisYear;
+  return new Date(TODAY.getFullYear() + 1, dob.getMonth(), dob.getDate());
+}
+
+function daysUntil(date) {
+  return Math.round((date - TODAY) / (1000 * 60 * 60 * 24));
+}
+
+function diffYearsExact(olderDob, youngerDob) {
+  // How old was older person when younger was born
+  return ageAtDate(olderDob, youngerDob);
+}
+
+function diffYearsBetween(dobA, dobB) {
+  // Absolute age gap in years
+  const older = dobA < dobB ? dobA : dobB;
+  const younger = dobA < dobB ? dobB : dobA;
+  return ageAtDate(older, younger);
+}
+
+function getZodiac(dob) {
+  const m = dob.getMonth() + 1, d = dob.getDate();
+  if ((m==1&&d>=20)||(m==2&&d<=18)) return "Aquarius";
+  if ((m==2&&d>=19)||(m==3&&d<=20)) return "Pisces";
+  if ((m==3&&d>=21)||(m==4&&d<=19)) return "Aries";
+  if ((m==4&&d>=20)||(m==5&&d<=20)) return "Taurus";
+  if ((m==5&&d>=21)||(m==6&&d<=20)) return "Gemini";
+  if ((m==6&&d>=21)||(m==7&&d<=22)) return "Cancer";
+  if ((m==7&&d>=23)||(m==8&&d<=22)) return "Leo";
+  if ((m==8&&d>=23)||(m==9&&d<=22)) return "Virgo";
+  if ((m==9&&d>=23)||(m==10&&d<=22)) return "Libra";
+  if ((m==10&&d>=23)||(m==11&&d<=21)) return "Scorpio";
+  if ((m==11&&d>=22)||(m==12&&d<=21)) return "Sagittarius";
+  return "Capricorn";
+}
+
+function getGen(yr) {
+  if (yr < 1965) return "Boomer";
+  if (yr <= 1980) return "Gen X";
+  if (yr <= 1996) return "Millennial";
+  if (yr <= 2012) return "Gen Z";
+  return "Gen Alpha";
+}
+
+function fmtDate(date) {
+  return MONTHS_FULL[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
+}
+
+function pillClass(days) {
+  if (days === 0) return "pill pill-today";
+  if (days <= 14) return "pill pill-soon";
+  if (days <= 60) return "pill pill-near";
+  return "pill pill-far";
+}
+
+function pillLabel(days) {
+  if (days === 0) return "Today!";
+  if (days === 1) return "Tomorrow";
+  return days + " days";
+}
+
+function initials(name) { return name.slice(0,2).toUpperCase(); }
+
+// BUILD PEOPLE DATA
+const people = RAW.map((r, i) => {
+  const dob = parseDate(r.dob);
+  const nb = nextBirthday(dob);
+  const du = daysUntil(nb);
+  const age = ageNow(dob);
+  return {
+    name: r.name,
+    dob,
+    dobStr: r.dob,
+    age,
+    nextAge: age + 1,
+    nextBirthday: nb,
+    daysUntil: du,
+    month: dob.getMonth(),
+    day: dob.getDate(),
+    year: dob.getFullYear(),
+    zodiac: getZodiac(dob),
+    gen: getGen(dob.getFullYear()),
+    avatarBg: AVATAR_COLORS[i].bg,
+    avatarColor: AVATAR_COLORS[i].color,
+    initials: initials(r.name),
+    barColor: BAR_COLORS[i % BAR_COLORS.length],
+  };
+});
+
+const bySoonest = [...people].sort((a,b) => a.daysUntil - b.daysUntil);
+const byAge = [...people].sort((a,b) => a.dob - b.dob);
+
+const nextUp = bySoonest[0];
+const oldest = byAge[0];
+const youngest = byAge[byAge.length - 1];
+
+const totalSpan = diffYearsBetween(oldest.dob, youngest.dob);
+const avgAge = Math.round(people.reduce((s,p) => s + p.age, 0) / people.length);
+
+const monthCounts = Array(12).fill(0);
+people.forEach(p => monthCounts[p.month]++);
+const maxMonthCount = Math.max(...monthCounts);
+const busiestMonthIdx = monthCounts.indexOf(maxMonthCount);
+
+// Find closest & furthest pairs
+let minGapYears = Infinity, minGapPair = null;
+let maxGapYears = 0, maxGapPair = null;
+for (let i = 0; i < byAge.length; i++) {
+  for (let j = i+1; j < byAge.length; j++) {
+    const g = diffYearsBetween(byAge[i].dob, byAge[j].dob);
+    if (g < minGapYears) { minGapYears = g; minGapPair = [byAge[i], byAge[j]]; }
+    if (g > maxGapYears) { maxGapYears = g; maxGapPair = [byAge[i], byAge[j]]; }
+  }
+}
+const [gapOlder, gapYounger] = maxGapPair;
+const olderWasAge = diffYearsExact(gapOlder.dob, gapYounger.dob);
+
+// Shared birthdays (same month+day)
+const sharedMap = {};
+people.forEach(p => {
+  const key = `${p.month}-${p.day}`;
+  if (!sharedMap[key]) sharedMap[key] = [];
+  sharedMap[key].push(p);
+});
+const sharedGroups = Object.values(sharedMap).filter(g => g.length > 1);
+
+// Zodiac counts
+const zodiacMap = {};
+people.forEach(p => { zodiacMap[p.zodiac] = (zodiacMap[p.zodiac]||0) + 1; });
+const sortedZodiac = Object.entries(zodiacMap).sort((a,b) => b[1]-a[1]);
+
+// Generations
+const genMap = { "Boomer": {color:"#EEEDFE",text:"#534AB7",sub:"#3C3489",range:"born before 1965",members:[]}, "Gen X":{color:"#E1F5EE",text:"#0F6E56",sub:"#085041",range:"born 1965–1980",members:[]}, "Millennial":{color:"#FAEEDA",text:"#854F0B",sub:"#633806",range:"born 1981–1996",members:[]}, "Gen Z":{color:"#FAECE7",text:"#993C1D",sub:"#712B13",range:"born 1997–2012",members:[]}, "Gen Alpha":{color:"#E6F1FB",text:"#185FA5",sub:"#0C447C",range:"born 2013+",members:[]} };
+people.forEach(p => { if (genMap[p.gen]) genMap[p.gen].members.push(p.name); });
+
+// Milestones this year
+const milestoneColors = {1:["#EAF3DE","#3B6D11"],2:["#EAF3DE","#3B6D11"],3:["#EAF3DE","#3B6D11"],4:["#EAF3DE","#3B6D11"],5:["#EAF3DE","#3B6D11"],10:["#EAF3DE","#3B6D11"],13:["#E6F1FB","#185FA5"],16:["#E6F1FB","#185FA5"],18:["#E6F1FB","#185FA5"],21:["#EEEDFE","#534AB7"],25:["#E1F5EE","#0F6E56"],30:["#FAEEDA","#854F0B"],40:["#FBEAF0","#993556"],50:["#FAECE7","#993C1D"],60:["#EEEDFE","#3C3489"],65:["#E1F5EE","#085041"],70:["#FAEEDA","#633806"],75:["#FAECE7","#712B13"],80:["#FCEBEB","#791F1F"],90:["#FCEBEB","#501313"],100:["#FAEEDA","#412402"]};
+const upcomingMilestones = bySoonest.filter(p => MILESTONES.includes(p.nextAge));
+
+// --- RENDER ---
+
+document.getElementById("header-sub").textContent =
+  `${people.length} family members · as of ${fmtDate(TODAY)}`;
+
+document.getElementById("footer").textContent =
+  `Generated ${fmtDate(TODAY)} · All ages verified as of today`;
+
+const app = document.getElementById("app");
+let html = "";
+
+// Next up hero
+html += `<div class="next-hero">
+  <div class="icon">&#127874;</div>
+  <div class="info">
+    <div class="eyebrow">Next birthday</div>
+    <div class="name">${nextUp.name}</div>
+    <div class="details">${MONTHS_FULL[nextUp.nextBirthday.getMonth()]} ${nextUp.nextBirthday.getDate()} &middot; Turning ${nextUp.nextAge}</div>
+  </div>
+  <div class="countdown">
+    <div class="days-num">${nextUp.daysUntil === 0 ? "&#127881;" : nextUp.daysUntil}</div>
+    <div class="days-label">${nextUp.daysUntil === 0 ? "Today!" : "days away"}</div>
+  </div>
+</div>`;
+
+// Stats row
+html += `<div class="stats-row">
+  <div class="stat-card"><div class="label">Family members</div><div class="value">${people.length}</div><div class="sub">tracked</div></div>
+  <div class="stat-card"><div class="label">Average age</div><div class="value">${avgAge}</div><div class="sub">years old</div></div>
+  <div class="stat-card"><div class="label">Youngest</div><div class="value">${youngest.name}</div><div class="sub">age ${youngest.age}</div></div>
+  <div class="stat-card"><div class="label">Oldest</div><div class="value">${oldest.name}</div><div class="sub">age ${oldest.age}</div></div>
+  <div class="stat-card"><div class="label">Age span</div><div class="value">${totalSpan} yrs</div><div class="sub">oldest to youngest</div></div>
+  <div class="stat-card"><div class="label">Busiest month</div><div class="value">${MONTHS[busiestMonthIdx]}</div><div class="sub">${maxMonthCount} birthdays</div></div>
+</div>`;
+
+// Shared birthday banner
+sharedGroups.forEach(group => {
+  const names = group.map(p=>p.name).join(" & ");
+  const d = group[0];
+  html += `<div class="shared-banner">&#127881; ${names} share the same birthday — ${MONTHS_FULL[d.month]} ${d.day}!</div>`;
+});
+
+// Two col: coming up + month chart
+html += `<div class="two-col">`;
+
+// Coming up
+html += `<div class="panel"><div class="section-label">Coming up next</div><ul class="bday-list">`;
+bySoonest.forEach(p => {
+  html += `<li class="bday-item${p.daysUntil===0?" today-item":""}">
+    <div class="avatar" style="background:${p.avatarBg};color:${p.avatarColor}">${p.initials}</div>
+    <div>
+      <div class="bday-name">${p.name}</div>
+      <div class="bday-meta">${MONTHS[p.nextBirthday.getMonth()]} ${p.nextBirthday.getDate()} &middot; turning ${p.nextAge}</div>
+    </div>
+    <div class="bday-right">
+      <span class="${pillClass(p.daysUntil)}">${pillLabel(p.daysUntil)}</span>
+      <span class="bday-age">now ${p.age}</span>
+    </div>
+  </li>`;
+});
+html += `</ul></div>`;
+
+// Month chart + zodiac
+html += `<div style="display:flex;flex-direction:column;gap:1rem">
+  <div class="panel">
+    <div class="section-label">Birthdays by month</div>
+    <div class="month-chart">`;
+MONTHS.forEach((m,i) => {
+  const c = monthCounts[i];
+  const pct = c === 0 ? 0 : Math.max(8, Math.round((c/maxMonthCount)*100));
+  html += `<div class="month-row">
+    <div class="month-name">${m}</div>
+    <div class="month-bar-track">
+      ${c > 0 ? `<div class="month-bar-fill" style="width:${pct}%;background:${BAR_COLORS[i]}"><span>${c}</span></div>` : ""}
+    </div>
+    <div class="month-count">${c||""}</div>
+  </div>`;
+});
+html += `</div></div>
+  <div class="panel">
+    <div class="section-label">Zodiac signs</div>
+    <div class="zodiac-grid">`;
+sortedZodiac.forEach(([sign,count]) => {
+  html += `<div class="zodiac-row"><span class="zodiac-sym">${ZODIAC_EMOJI[sign]}</span><span class="zodiac-name">${sign}</span><span class="zodiac-count">${count}</span></div>`;
+});
+html += `</div></div></div>`;
+html += `</div>`; // end two-col
+
+// Age gap fun facts
+html += `<div class="section-label" style="margin-bottom:1rem">Age gap fun facts</div>
+<div class="fact-grid">`;
+
+const facts = [
+  { tag:"Family age span", tagBg:"#EEEDFE", tagColor:"#534AB7",
+    main:`${totalSpan} years between oldest &amp; youngest`,
+    sub:`${oldest.name} (${oldest.age}) was already ${olderWasAge} when ${youngest.name} was born` },
+  { tag:"Closest in age", tagBg:"#E1F5EE", tagColor:"#0F6E56",
+    main:`${minGapPair[0].name} &amp; ${minGapPair[1].name} — only ${minGapYears} year${minGapYears===1?"":"s"} apart`,
+    sub:`Born ${Math.round(Math.abs(minGapPair[0].dob-minGapPair[1].dob)/(30.44*24*3600*1000))} months apart` },
+  { tag:"Furthest apart", tagBg:"#FAECE7", tagColor:"#993C1D",
+    main:`${gapOlder.name} &amp; ${gapYounger.name} — ${maxGapYears} years apart`,
+    sub:`${gapOlder.name} was ${olderWasAge} years old when ${gapYounger.name} was born` },
+  { tag:"Almost twins", tagBg:"#FAEEDA", tagColor:"#854F0B",
+    main:"Jassi &amp; Jasmeen born same year, 3 days apart",
+    sub:"Jasmeen: July 20 &middot; Jassi: July 23, 1996" },
+  { tag:"Shared birthday", tagBg:"#E6F1FB", tagColor:"#185FA5",
+    main:"Jassi &amp; Noor both born July 23",
+    sub:`Jassi was ${diffYearsExact(parseDate("1996-07-23"), parseDate("2020-07-23"))} years old when Noor arrived on the exact same date` },
+  { tag:"Generation span", tagBg:"#EAF3DE", tagColor:"#3B6D11",
+    main:`${Object.values(genMap).filter(g=>g.members.length).length} generations in one family`,
+    sub:Object.entries(genMap).filter(([,g])=>g.members.length).map(([k,g])=>`${k}: ${g.members.length}`).join(" &middot; ") },
+];
+
+facts.forEach(f => {
+  html += `<div class="fact-card">
+    <span class="fact-tag" style="background:${f.tagBg};color:${f.tagColor}">${f.tag}</span>
+    <div class="fact-main">${f.main}</div>
+    <div class="fact-sub">${f.sub}</div>
+  </div>`;
+});
+html += `</div>`;
+
+// Timeline
+const minT = oldest.dob.getTime(), maxT = youngest.dob.getTime(), rangeT = maxT - minT;
+html += `<div class="timeline-section">
+  <div class="section-label">Family timeline — oldest to youngest</div>`;
+byAge.forEach((p,i) => {
+  const pct = rangeT===0 ? 0 : ((p.dob.getTime()-minT)/rangeT)*72;
+  const [bg,col] = [AVATAR_COLORS[people.indexOf(p)].bg, AVATAR_COLORS[people.indexOf(p)].color];
+  html += `<div class="tl-row">
+    <div class="tl-name">${p.name}</div>
+    <div class="tl-bar-wrap">
+      <div class="tl-bar" style="margin-left:${pct.toFixed(1)}%;width:${(100-pct).toFixed(1)}%;background:${bg}">
+        <span style="color:${col}">${p.year}</span>
+      </div>
+    </div>
+    <div class="tl-age">${p.age}y</div>
+  </div>`;
+});
+html += `</div>`;
+
+// Generations
+html += `<div class="gen-section"><div class="section-label">Generations</div><div class="gen-grid">`;
+Object.entries(genMap).forEach(([gen,g]) => {
+  if (!g.members.length) return;
+  html += `<div class="gen-card" style="background:${g.color}">
+    <div class="gen-title" style="color:${g.sub}">${gen}</div>
+    <div class="gen-range" style="color:${g.sub}">${g.range}</div>
+    <div class="gen-names" style="color:${g.text}">${g.members.join(", ")}</div>
+  </div>`;
+});
+html += `</div></div>`;
+
+// Milestones
+html += `<div class="milestone-section"><div class="section-label">Milestone birthdays this year</div>`;
+if (upcomingMilestones.length === 0) {
+  html += `<div class="no-milestone">No milestone birthdays this year.</div>`;
+} else {
+  upcomingMilestones.forEach(p => {
+    const [mbg,mcol] = milestoneColors[p.nextAge] || ["#F1EFE8","#5F5E5A"];
+    const idx = people.indexOf(p);
+    html += `<div class="milestone-row">
+      <div class="avatar" style="background:${AVATAR_COLORS[idx].bg};color:${AVATAR_COLORS[idx].color}">${p.initials}</div>
+      <div style="flex:1">
+        <span style="font-size:0.875rem;font-weight:500">${p.name}</span>
+        <span style="font-size:0.75rem;color:var(--ink-muted);margin-left:8px">${MONTHS_FULL[p.nextBirthday.getMonth()]} ${p.nextBirthday.getDate()}</span>
+      </div>
+      <span class="milestone-badge" style="background:${mbg};color:${mcol}">Turning ${p.nextAge}!</span>
+    </div>`;
+  });
+}
+html += `</div>`;
+
+// MATH AUDIT TABLE
+html += `<div class="audit-section">
+  <div class="section-label">Full math audit — verify every number</div>
+  <table class="audit-table">
+    <thead><tr>
+      <th>Name</th><th>Date of Birth</th><th>Age today</th><th>Next birthday</th><th>Turning</th><th>Days away</th><th>Zodiac</th><th>Generation</th>
+    </tr></thead>
+    <tbody>`;
+bySoonest.forEach(p => {
+  html += `<tr>
+    <td><strong>${p.name}</strong></td>
+    <td>${fmtDate(p.dob)}</td>
+    <td>${p.age}</td>
+    <td>${fmtDate(p.nextBirthday)}</td>
+    <td>${p.nextAge}</td>
+    <td>${p.daysUntil === 0 ? "Today!" : p.daysUntil}</td>
+    <td>${ZODIAC_EMOJI[p.zodiac]} ${p.zodiac}</td>
+    <td>${p.gen}</td>
+  </tr>`;
+});
+html += `</tbody></table></div>`;
+
+app.innerHTML = html;
+</script>
+</body>
+</html>
