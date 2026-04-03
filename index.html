@@ -213,14 +213,7 @@
     line-height: 1.5;
   }
 
-  /* MATH AUDIT TABLE */
-  .audit-section { margin-bottom: 2rem; }
-  .audit-table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: var(--radius); border: 1px solid var(--border); }
-  .audit-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; background: var(--card-bg); min-width: 600px; }
-  .audit-table th { background: #F5F2ED; font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-muted); padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
-  .audit-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); color: var(--ink); vertical-align: middle; white-space: nowrap; }
-  .audit-table tr:last-child td { border-bottom: none; }
-  .audit-table tr:hover td { background: #FAFAF8; }
+
 
   footer {
     text-align: center;
@@ -666,28 +659,6 @@ byAge.forEach((p,i) => {
 });
 html += `</div>`;
 
-// MATH AUDIT TABLE
-html += `<div class="audit-section">
-  <div class="section-label">Full math audit — verify every number</div>
-  <div class="audit-table-wrap">
-  <table class="audit-table">
-    <thead><tr>
-      <th>Name</th><th>Date of Birth</th><th>Age today</th><th>Next birthday</th><th>Turning</th><th>Days away</th><th>Zodiac</th><th>Generation</th>
-    </tr></thead>
-    <tbody>`;
-bySoonest.forEach(p => {
-  html += `<tr>
-    <td><strong>${p.name}</strong></td>
-    <td>${fmtDate(p.dob)}</td>
-    <td>${p.age}</td>
-    <td>${fmtDate(p.nextBirthday)}</td>
-    <td>${p.nextAge}</td>
-    <td>${p.daysUntil === 0 ? "Today!" : p.daysUntil}</td>
-    <td>${ZODIAC_EMOJI[p.zodiac]} ${p.zodiac}</td>
-    <td>${p.gen}</td>
-  </tr>`;
-});
-html += `</tbody></table></div></div>`;
 
 app.innerHTML = html;
 </script>
