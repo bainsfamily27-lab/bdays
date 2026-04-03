@@ -551,6 +551,18 @@ if (upcomingMilestones.length === 0) {
 }
 html += `</div>`;
 
+// Generations
+html += `<div class="gen-section"><div class="section-label">Generations</div><div class="gen-grid">`;
+Object.entries(genMap).forEach(([gen,g]) => {
+  if (!g.members.length) return;
+  html += `<div class="gen-card" style="background:${g.color}">
+    <div class="gen-title" style="color:${g.sub}">${gen}</div>
+    <div class="gen-range" style="color:${g.sub}">${g.range}</div>
+    <div class="gen-names" style="color:${g.text}">${g.members.join(", ")}</div>
+  </div>`;
+});
+html += `</div></div>`;
+
 // Two col: coming up + month chart
 html += `<div class="two-col">`;
 
@@ -649,18 +661,6 @@ byAge.forEach((p,i) => {
   </div>`;
 });
 html += `</div>`;
-
-// Generations
-html += `<div class="gen-section"><div class="section-label">Generations</div><div class="gen-grid">`;
-Object.entries(genMap).forEach(([gen,g]) => {
-  if (!g.members.length) return;
-  html += `<div class="gen-card" style="background:${g.color}">
-    <div class="gen-title" style="color:${g.sub}">${gen}</div>
-    <div class="gen-range" style="color:${g.sub}">${g.range}</div>
-    <div class="gen-names" style="color:${g.text}">${g.members.join(", ")}</div>
-  </div>`;
-});
-html += `</div></div>`;
 
 // MATH AUDIT TABLE
 html += `<div class="audit-section">
