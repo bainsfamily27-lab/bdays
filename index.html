@@ -190,7 +190,7 @@
   .gen-card { border-radius: var(--radius-sm); padding: 0.9rem 1rem; }
   .gen-title { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 3px; }
   .gen-range { font-size: 0.65rem; margin-bottom: 7px; }
-  .gen-names { font-size: 0.75rem; font-weight: 500; line-height: 1.7; }
+  .gen-names { font-size: 0.75rem; font-weight: 500; line-height: 1.7; word-break: break-word; }
 
   /* MILESTONE */
   .milestone-section { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.1rem; margin-bottom: 1.5rem; }
@@ -237,8 +237,9 @@
     .panel { padding: 0.85rem 0.9rem; }
     .fact-grid { grid-template-columns: 1fr; }
     .gen-grid { grid-template-columns: 1fr 1fr; }
-    .zodiac-grid { grid-template-columns: 1fr; }
     .tl-name { width: 52px; font-size: 0.62rem; }
+    .two-col { grid-template-columns: 1fr; }
+    .bday-name { font-size: 0.8rem; }
   }
 </style>
 </head>
@@ -272,7 +273,7 @@ const RAW = [
   { name: "Jasmeen",  dob: "1996-07-20" },
   { name: "Harkirat", dob: "1997-05-27" },
   { name: "Minnie",   dob: "1975-07-15" },
-  { name: "Ghazal",   dob: "1995-10-15" },
+  { name: "Ghazal",   dob: "1992-10-15" },
   { name: "Jasleen",  dob: "1994-09-15" },
   { name: "Manny",    dob: "1986-12-27" },
   { name: "Rani",     dob: "1987-09-17" },
@@ -388,7 +389,8 @@ function getGen(yr) {
   if (yr <= 1980) return "Gen X";
   if (yr <= 1996) return "Millennial";
   if (yr <= 2012) return "Gen Z";
-  return "Gen Alpha";
+  if (yr <= 2024) return "Gen Alpha";
+  return "Gen Beta";
 }
 
 function fmtDate(date) {
@@ -479,7 +481,7 @@ people.forEach(p => { zodiacMap[p.zodiac] = (zodiacMap[p.zodiac]||0) + 1; });
 const sortedZodiac = Object.entries(zodiacMap).sort((a,b) => b[1]-a[1]);
 
 // Generations
-const genMap = { "Boomer": {color:"#EEEDFE",text:"#534AB7",sub:"#3C3489",range:"born before 1965",members:[]}, "Gen X":{color:"#E1F5EE",text:"#0F6E56",sub:"#085041",range:"born 1965–1980",members:[]}, "Millennial":{color:"#FAEEDA",text:"#854F0B",sub:"#633806",range:"born 1981–1996",members:[]}, "Gen Z":{color:"#FAECE7",text:"#993C1D",sub:"#712B13",range:"born 1997–2012",members:[]}, "Gen Alpha":{color:"#E6F1FB",text:"#185FA5",sub:"#0C447C",range:"born 2013+",members:[]} };
+const genMap = { "Boomer": {color:"#EEEDFE",text:"#534AB7",sub:"#3C3489",range:"born before 1965",members:[]}, "Gen X":{color:"#E1F5EE",text:"#0F6E56",sub:"#085041",range:"born 1965–1980",members:[]}, "Millennial":{color:"#FAEEDA",text:"#854F0B",sub:"#633806",range:"born 1981–1996",members:[]}, "Gen Z":{color:"#FAECE7",text:"#993C1D",sub:"#712B13",range:"born 1997–2012",members:[]}, "Gen Alpha":{color:"#E6F1FB",text:"#185FA5",sub:"#0C447C",range:"born 2013–2024",members:[]}, "Gen Beta":{color:"#EAF3DE",text:"#3B6D11",sub:"#27500A",range:"born 2025+",members:[]} };
 people.forEach(p => { if (genMap[p.gen]) genMap[p.gen].members.push(p.name); });
 
 // Milestones this year
@@ -560,6 +562,40 @@ Object.entries(genMap).forEach(([gen,g]) => {
 });
 html += `</div></div>`;
 
+// Zodiac sign cards
+const zodiacMemberMap = {};
+people.forEach(p => {
+  if (!zodiacMemberMap[p.zodiac]) zodiacMemberMap[p.zodiac] = [];
+  zodiacMemberMap[p.zodiac].push(p.name);
+});
+const zodiacCardColors = {
+  Aries:       { color:"#FAECE7", text:"#993C1D", sub:"#712B13" },
+  Taurus:      { color:"#E1F5EE", text:"#0F6E56", sub:"#085041" },
+  Gemini:      { color:"#FAEEDA", text:"#854F0B", sub:"#633806" },
+  Cancer:      { color:"#E6F1FB", text:"#185FA5", sub:"#0C447C" },
+  Leo:         { color:"#FAEEDA", text:"#854F0B", sub:"#412402" },
+  Virgo:       { color:"#EAF3DE", text:"#3B6D11", sub:"#27500A" },
+  Libra:       { color:"#FBEAF0", text:"#993556", sub:"#72243E" },
+  Scorpio:     { color:"#FCEBEB", text:"#A32D2D", sub:"#791F1F" },
+  Sagittarius: { color:"#EEEDFE", text:"#534AB7", sub:"#3C3489" },
+  Capricorn:   { color:"#F1EFE8", text:"#5F5E5A", sub:"#444441" },
+  Aquarius:    { color:"#E6F1FB", text:"#185FA5", sub:"#042C53" },
+  Pisces:      { color:"#E1F5EE", text:"#0F6E56", sub:"#04342C" },
+};
+const zodiacOrder = ["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"];
+html += `<div class="gen-section"><div class="section-label">Zodiac signs</div><div class="gen-grid">`;
+zodiacOrder.forEach(sign => {
+  const members = zodiacMemberMap[sign];
+  if (!members || !members.length) return;
+  const c = zodiacCardColors[sign];
+  html += `<div class="gen-card" style="background:${c.color}">
+    <div class="gen-title" style="color:${c.sub}">${ZODIAC_EMOJI[sign]} ${sign}</div>
+    <div class="gen-range" style="color:${c.sub}">${members.length} member${members.length>1?"s":""}</div>
+    <div class="gen-names" style="color:${c.text}">${members.join(", ")}</div>
+  </div>`;
+});
+html += `</div></div>`;
+
 // Two col: coming up + month chart
 html += `<div class="two-col">`;
 
@@ -596,15 +632,9 @@ MONTHS.forEach((m,i) => {
     <div class="month-count">${c||""}</div>
   </div>`;
 });
-html += `</div></div>
-  <div class="panel">
-    <div class="section-label">Zodiac signs</div>
-    <div class="zodiac-grid">`;
-sortedZodiac.forEach(([sign,count]) => {
-  html += `<div class="zodiac-row"><span class="zodiac-sym">${ZODIAC_EMOJI[sign]}</span><span class="zodiac-name">${sign}</span><span class="zodiac-count">${count}</span></div>`;
-});
-html += `</div></div></div>`;
-html += `</div>`; // end two-col
+html += `</div></div>`;  // close month-chart panel
+html += `</div>`;        // close right col flex wrapper
+html += `</div>`;        // end two-col
 
 // Age gap fun facts
 html += `<div class="section-label" style="margin-bottom:1rem">Age gap fun facts</div>
