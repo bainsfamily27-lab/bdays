@@ -610,22 +610,41 @@ html += `</div>`; // end two-col
 html += `<div class="section-label" style="margin-bottom:1rem">Age gap fun facts</div>
 <div class="fact-grid">`;
 
+// Dynamically find closest same-year pair (born in same calendar year)
+const sameYearPairs = [];
+for (let i = 0; i < byAge.length; i++) {
+  for (let j = i+1; j < byAge.length; j++) {
+    if (byAge[i].year === byAge[j].year) {
+      const dayDiff = Math.abs(Math.round((byAge[i].dob - byAge[j].dob) / (24*3600*1000)));
+      sameYearPairs.push({ a: byAge[i], b: byAge[j], dayDiff });
+    }
+  }
+}
+sameYearPairs.sort((a,b) => a.dayDiff - b.dayDiff);
+const closestSameYear = sameYearPairs[0];
+
+// Dynamically find shared exact birthday (same month+day, different years)
+const sharedExact = sharedGroups.length > 0 ? sharedGroups.reduce((best, g) => {
+  const gap = diffYearsBetween(g[0].dob, g[g.length-1].dob);
+  return (!best || gap > diffYearsBetween(best[0].dob, best[best.length-1].dob)) ? g : best;
+}, null) : null;
+
 const facts = [
   { tag:"Family age span", tagBg:"#EEEDFE", tagColor:"#534AB7",
     main:`${totalSpan} years between oldest &amp; youngest`,
-    sub:`${oldest.name} (${oldest.age}) was already ${olderWasAge} when ${youngest.name} was born` },
+    sub:`${oldest.name} (${oldest.age}) was already ${olderWasAge} years old when ${youngest.name} was born` },
   { tag:"Closest in age", tagBg:"#E1F5EE", tagColor:"#0F6E56",
     main:`${minGapPair[0].name} &amp; ${minGapPair[1].name} — only ${minGapYears} year${minGapYears===1?"":"s"} apart`,
     sub:`Born ${Math.round(Math.abs(minGapPair[0].dob-minGapPair[1].dob)/(30.44*24*3600*1000))} months apart` },
   { tag:"Furthest apart", tagBg:"#FAECE7", tagColor:"#993C1D",
     main:`${gapOlder.name} &amp; ${gapYounger.name} — ${maxGapYears} years apart`,
     sub:`${gapOlder.name} was ${olderWasAge} years old when ${gapYounger.name} was born` },
-  { tag:"Almost twins", tagBg:"#FAEEDA", tagColor:"#854F0B",
-    main:"Jassi &amp; Jasmeen born same year, 3 days apart",
-    sub:"Jasmeen: July 20 &middot; Jassi: July 23, 1996" },
-  { tag:"Shared birthday", tagBg:"#E6F1FB", tagColor:"#185FA5",
-    main:"Jassi &amp; Noor both born July 23",
-    sub:`Jassi was ${diffYearsExact(parseDate("1996-07-23"), parseDate("2020-07-23"))} years old when Noor arrived on the exact same date` },
+  ...(closestSameYear ? [{ tag:"Same year, closest dates", tagBg:"#FAEEDA", tagColor:"#854F0B",
+    main:`${closestSameYear.a.name} &amp; ${closestSameYear.b.name} — born ${closestSameYear.dayDiff} day${closestSameYear.dayDiff===1?"":"s"} apart`,
+    sub:`Both born in ${closestSameYear.a.year}` }] : []),
+  ...(sharedExact ? [{ tag:"Shared birthday", tagBg:"#E6F1FB", tagColor:"#185FA5",
+    main:`${sharedExact.map(p=>p.name).join(" &amp; ")} all share ${MONTHS_FULL[sharedExact[0].month]} ${sharedExact[0].day}`,
+    sub:`${diffYearsBetween(sharedExact[0].dob, sharedExact[sharedExact.length-1].dob)} years apart` }] : []),
   { tag:"Generation span", tagBg:"#EAF3DE", tagColor:"#3B6D11",
     main:`${Object.values(genMap).filter(g=>g.members.length).length} generations in one family`,
     sub:Object.entries(genMap).filter(([,g])=>g.members.length).map(([k,g])=>`${k}: ${g.members.length}`).join(" &middot; ") },
